@@ -90,10 +90,19 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+
+        // Check if user exists and password is correct
         if (!user || !(await user.comparePassword(password))) {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
-        const token = jwtUtils.generateToken(user);
+
+        // Check if the user is verified
+        if (!user.verified) {
+            return res.status(401).json({ message: 'User not verified. Please verify your account using the OTP sent to your email.' });
+        }
+
+        // Generate token
+        const token = jwtUtils.generateToken({ id: user._id, role: user.role });
         res.status(200).json({ token });
     } catch (err) {
         res.status(400).json({ error: err.message });
