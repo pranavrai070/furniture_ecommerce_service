@@ -10,6 +10,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
+app.get('/',(_req,res)=>{
+ return res.status(200).json({message:"Furniture Server is Running Fine"});
+})
+
 // Error handling middleware
 app.use(errorMiddleware);
 
