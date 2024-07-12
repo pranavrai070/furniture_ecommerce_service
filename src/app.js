@@ -1,12 +1,21 @@
 const express = require('express');
 const app = express();
 const cors=require("cors");
+const bodyparser=require('body-parser');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const errorMiddleware = require('./middlewares/errorMiddleware');
 
 app.use(express.json());
+
+app.use(bodyparser.json({ limit: "50mb" }));
+app.use(
+  bodyparser.urlencoded({
+    extended: true,
+    // parameterLimit: 50000,
+  })
+);
 
 // Define CORS options
 const corsOptions = {
