@@ -67,6 +67,7 @@ const verifyOtp = async (req, res) => {
         const { email, otp } = req.body;
         const user = await User.findOne({ email });
 
+
         if (!user) {
             return res.status(400).json({ error: 'User not found' });
         }
@@ -84,7 +85,39 @@ const verifyOtp = async (req, res) => {
         user.otpExpires = undefined;
         await user.save();
 
-        res.status(200).json({ message: 'User verified successfully' });
+        const token = jwtUtils.generateToken({ id: user._id, role: user.role });
+
+        return res.status(200).json({ message: 'User verified successfully' ,token});
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+const sendOtp = async (req, res) => {
+    try {
+        const { email} = req.body;
+        const user = await User.findOne({ email });
+
+        // Generate OTP
+        const otp = generateOTP();
+        user.otp = otp;
+        user.otpExpires = Date.now() + 3600000; // OTP expires in 1 hour
+
+        await user.save();
+
+        // Send OTP to user's email
+        const mailOptions = {
+            from: 'pranavrai2070@gmail.com',
+            to: email,
+            subject: 'Account Verification OTP',
+            text: `Your OTP is ${otp}`
+        };
+
+
+        await transporter.sendMail(mailOptions);
+
+
+        return res.status(200).json({ message: "OTP sent Successfully Check Your Email" });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -94,6 +127,8 @@ const login = async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
+        let isVerified=false;
+        let token=null;
 
         // Check if user exists and password is correct
         if (!user || !(await user.comparePassword(password))) {
@@ -101,13 +136,14 @@ const login = async (req, res) => {
         }
 
         // Check if the user is verified
-        if (!user.verified) {
-            return res.status(401).json({ message: 'User not verified. Please verify your account using the OTP sent to your email.' });
+        if (user.verified) {
+            isVerified = true;
+            // Generate token
+        token = jwtUtils.generateToken({ id: user._id, role: user.role });
         }
 
-        // Generate token
-        const token = jwtUtils.generateToken({ id: user._id, role: user.role });
-        res.status(200).json({ token });
+        
+        return res.status(200).json({ token,isVerified });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -116,5 +152,6 @@ const login = async (req, res) => {
 module.exports ={
     signup,
     login,
-    verifyOtp
+    verifyOtp,
+    sendOtp
 }
