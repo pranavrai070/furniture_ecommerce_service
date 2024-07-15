@@ -20,8 +20,28 @@ const s3Client = new S3Client({
 
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.find();
-        res.status(200).json(products);
+        const products = await Product.find().select('_id name price ratings images');
+
+        const formattedProducts = products.map(product => ({
+            _id:product._id,
+            name: product.name,
+            price: product.price,
+            ratings: product.ratings,
+            image: product.images[0], // get the first image from the array
+        }));
+
+        return res.status(200).json(formattedProducts);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+const getProduct = async (req, res) => {
+    try {
+        const {product_id}=req.body;
+        const product = await Product.findById(product_id);
+
+        return res.status(200).json(product);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
@@ -78,5 +98,6 @@ const createProduct = async (req, res) => {
 
 module.exports={
     getProducts,
-    createProduct
+    createProduct,
+    getProduct
 }
