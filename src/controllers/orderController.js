@@ -36,7 +36,17 @@ const getOrders = async (req, res) => {
     }
 };
 
+const addToCart = async (req, res) => {
+    try {
+        const orders = await Order.find();
+        res.status(200).json(orders);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
 module.exports={
     getOrders,
-    createOrder
+    createOrder,
+    addToCart
 }

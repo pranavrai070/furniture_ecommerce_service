@@ -5,6 +5,8 @@ const bodyparser=require('body-parser');
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const userRoutes = require('./routes/userRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 const errorMiddleware = require('./middlewares/errorMiddleware');
 
 app.use(express.json());
@@ -38,9 +40,11 @@ const corsOptions = {
   });
 
   
-app.use('/api/auth', authRoutes);
-app.use('/api/products', productRoutes);
-app.use('/api/orders', orderRoutes);
+app.use('/api/auth',authRoutes);
+app.use('/api/products',productRoutes);
+app.use('/api/orders',orderRoutes);
+app.use('/api/user',userRoutes);
+app.use('/api/cart',cartRoutes);
 
 app.get('/',(_req,res)=>{
  return res.status(200).json({message:"Furniture Server is Running Fine"});
