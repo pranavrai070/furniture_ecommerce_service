@@ -143,7 +143,7 @@ const login = async (req, res) => {
         }
 
         
-        return res.status(200).json({ userId:user._id,token,isVerified });
+        return res.status(200).json({ userId:user._id,userEmail:user.email,userName:user.name,token,isVerified });
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
