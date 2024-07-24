@@ -7,5 +7,6 @@ router.post('/get_address',authMiddleware.protect, userController.getUserAddress
 router.post('/add_address',authMiddleware.protect, userController.addUserAddress);
 router.post('/update_address',authMiddleware.protect, userController.updateUserAddress);
 router.post('/delete_address',authMiddleware.protect, userController.deleteUserAddress);
+router.post('/get_user_cart',authMiddleware.protect, userController.getUserCart);
 
 module.exports = router;
