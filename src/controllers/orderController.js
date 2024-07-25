@@ -54,7 +54,7 @@ const placeOrder = async (req, res) => {
     }
 };
 
-const getOrders = async (req, res) => {
+const getOrders = async (_req, res) => {
     try {
         const orders = await Order.find();
         res.status(200).json(orders);
@@ -63,8 +63,29 @@ const getOrders = async (req, res) => {
     }
 };
 
+const getuserOrders = async (req, res) => {
+    try {
+        
+        const {userId}=req.body;
+        const oneUser= await User.findById(userId);
+        if(!oneUser){
+            return res.status(404).json({message:"No user Found"});
+        }
+        const orders = await Order.find({user: userId});
+        if (orders.length==0) {
+            return res.status(404).json({ message: 'No Orders Found' });
+        }
+        res.status(200).json(orders);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+};
+
+
+
 
 module.exports={
     getOrders,
-    placeOrder
+    placeOrder,
+    getuserOrders
 }
