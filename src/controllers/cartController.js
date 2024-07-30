@@ -26,7 +26,7 @@ const addToCart = async (req, res) => {
             cart.products[existingProductIndex].quantity += quantity;
         } else {
             // Add new product to cart
-            cart.products.push({ product: productId, quantity, price: product.price });
+            cart.products.push({ product: productId, quantity, price: product.price,image:product.images[0] });
         }
 
         // Update total value
